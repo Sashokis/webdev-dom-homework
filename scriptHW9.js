@@ -47,7 +47,7 @@ const renderComments = () => {
       const likeClass = comment.like ? "-active-like" : ""; 
       const editText = comment.isEdit ? "Сохранить" : "Редактировать"; 
       const editCommentText = comment.isEdit ? `<textarea class="comment-text edited-textarea">${comment.commentText}</textarea>` : `<div class="comment-text">${comment.commentText}</div>`; 
-      return `<li class="comment">
+      return `<li class="comment" data-index = ${index}>
         <div class="comment-header">
           <div>${comment.name}</div>
           <div>${comment.date}</div>
@@ -74,6 +74,7 @@ const renderComments = () => {
   // функции
   changeLikes(); 
   changeEdit();
+  answerComment();
 }; 
 
 function toggleButtonState() {
@@ -85,6 +86,22 @@ function toggleButtonState() {
     buttonElement.classList.add("button-error");
   }
 }
+
+// ответ на комментарий 
+const answerComment = () => {
+  const commentElements = document.querySelectorAll('.comment')
+
+  for (const commentElement of commentElements) {
+    const index = commentElement.dataset.index;
+    if (comments[index].isEdit === false) {
+      commentElement.addEventListener("click", () => {
+        textInputElement.value =`> ${comments[index].commentText} \n ${comments[index].name} \n`;
+        renderComments();
+      }); 
+    } 
+  }
+}
+
 
 // удаление комментария 
 const deleteButtonElement = document.getElementById("delete-comment-button");
@@ -103,9 +120,9 @@ const changeLikes =  () => {
   const likeButtons = document.querySelectorAll('.like-button');
  
   for (const likeButton of likeButtons) {
-    likeButton.addEventListener("click", () => {
+    likeButton.addEventListener("click", (event) => {
   console.log(likeButtons);
-
+      event.stopPropagation();
       const index = likeButton.dataset.index;
       if (comments[index].like === false) {
         comments[index].like = true;
@@ -124,7 +141,8 @@ const changeEdit = () => {
   const editButtons = document.querySelectorAll('.edit-button');
  
   for (const editButton of editButtons) {
-    editButton.addEventListener("click", () => {
+    editButton.addEventListener("click", (event) => {
+      event.stopPropagation();
       const index = editButton.dataset.index;
       if (comments[index].isEdit === false) {
         comments[index].isEdit = true;
@@ -148,7 +166,8 @@ textInputElement.addEventListener("keypress", function(event) {
 // =====================================================================================
 // вывод нового элемента
 renderComments();
-// changeLikes();
+
+// создание элемента 
 buttonElement.addEventListener("click", () => {
 
   let currentDate = new Date();
@@ -160,45 +179,21 @@ buttonElement.addEventListener("click", () => {
   let formattedDate = `${day}.${month}.${year} ${hours}:${minutes}`;
 
   comments.push({
-    name: nameInputElement.value,
+    name: nameInputElement.value.
+      replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;"),
     date: formattedDate,
-    commentText: textInputElement.value,
+    commentText: textInputElement.value.
+      replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;"),
     like: false,
     likesCounter: 0,
     isEdit: false
   });
-
-
-//   // добавление даты 
-//   let currentDate = new Date();
-//   let year = currentDate.getFullYear().toString().slice(-2);
-//   let month = ('0' + (currentDate.getMonth() + 1)).slice(-2);
-//   let day = ('0' + currentDate.getDate()).slice(-2); 
-//   let hours = ('0' + currentDate.getHours()).slice(-2); 
-//   let minutes = ('0' + currentDate.getMinutes()).slice(-2);
-//   let formattedDate = ${day}.${month}.${year} ${hours}:${minutes};
-
-  // // вывод комментария 
-  // const oldListHtml = listElement.innerHTML;
-  //     listElement.innerHTML =
-  //       oldListHtml +
-  //       `<li class="comment">
-  //       <div class="comment-header">
-  //         <div>${nameInputElement.value}</div>
-  //         <div>${formattedDate}</div>
-  //       </div>
-  //       <div class="comment-body">
-  //         <div class="comment-text">
-  //           ${textInputElement.value}
-  //         </div>
-  //       </div>
-  //       <div class="comment-footer">
-  //         <div class="likes">
-  //           <span class="likes-counter">0</span>
-  //           <button class="like-button"></button>
-  //         </div>
-  //       </div>
-  //     </li>`;
 
   renderComments();
 
@@ -208,3 +203,5 @@ buttonElement.addEventListener("click", () => {
   buttonElement.disabled = true;
   buttonElement.classList.add("button-error");
 });
+
+
