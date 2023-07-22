@@ -7,11 +7,17 @@
   </head>
 
   <body>
+    
     <div class="container">
+      <div>
+        <p class="hidden" id = "add-form-loadingPoint">
+          Пожалуйста подождите, загружаю комментарии... 
+        </p>
+      </div>
       <ul id="list-comment" class="comments">
         <!--  -->
       </ul>
-      <div class="add-form">
+      <div class="add-form" id = "add-form-id">
         <input 
           id="name-input"
           type="text"
@@ -26,8 +32,13 @@
           rows="4"
         ></textarea>
         <div class="add-form-row">
-          <button id="add-button" class="add-form-button">Написать</button>
+          <button id="add-button" class="add-form-button ">Написать</button>
         </div>
+      </div>
+      <div>
+        <p class="hidden" id = "add-form-point">
+          Комментарий добавляется... 
+        </p>
       </div>
       <div >
         <button class="add-form-button" id ="delete-comment-button">
