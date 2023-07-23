@@ -21,7 +21,14 @@ const fetchPromise = () => {
     comments = responseData.comments; 
     firstDownload();
     renderComments();
-   });
+   })
+   .catch((error) => {
+    loadingInputElement.textContent = "У вас сломался интернет, попробуйте позже";
+    alert("Кажется, у вас сломался интернет, попробуйте позже");
+    formInput.classList.add("hidden"); // панель ввода + кнопка написать
+
+
+   })
 }
 
 
@@ -29,7 +36,7 @@ const fetchPromise = () => {
 let checkFirstDownload = false; 
 const firstDownload = () =>{
   if (checkFirstDownload === false){
-    loadingInputElement.classList.remove("hidden")
+    loadingInputElement.classList.remove("hidden");
     checkFirstDownload = true;
   } else{
     loadingInputElement.classList.add("hidden");
@@ -173,17 +180,7 @@ const renderComments = () => {
   // answerComment();
 }; 
 
-// =====================================================================================
-// вывод нового элемента
-firstDownload(); // проверка 
-fetchPromise(); // функция Get
-renderComments();
-
-// создание элемента 
-buttonElement.addEventListener("click", () => {
-// firstDownload(); // проверка 
-  formInput.classList.add("hidden");
-  pointInputElement.classList.remove("hidden");
+const addTodo = (name, myText) => {
   fetch("https://wedev-api.sky.pro/api/v1/:sasha/comments", {
         method: "POST",
         body: JSON.stringify ({
@@ -199,8 +196,23 @@ buttonElement.addEventListener("click", () => {
           .replaceAll('"', "&quot;"),
         isLiked: false,
         likes: 0,
-        isEdit: false
+        isEdit: false,
+        forceError: true
         }),
+    })
+    .then((response) => {
+        console.log(response);
+        if (response.status === 201) {
+            return response.json();
+        }else if ((response.status === 400)) {
+            alert ("Имя и комментарий должны быть не короче 3 символов");
+            throw new Error("Сообщение меньше 3х символов");
+        }else if ((response.status === 500)) {
+            throw new Error("Сервер упал");
+        }  
+        else {
+            throw new Error("Инет упал");
+        }
     })
     .then(() => {
       return fetchPromise();
@@ -208,15 +220,42 @@ buttonElement.addEventListener("click", () => {
     .then(() => {
       formInput.classList.remove("hidden");
       pointInputElement.classList.add("hidden");
+      nameInputElement.value = "";
+      textInputElement.value = "";
+    })
+    .catch((error) => {
+      if (error.message === 'Сервер упал') {
+        addTodo(name, myText);
+      }else if (error.message === 'Сообщение меньше 3х символов'){
+          buttonElement.disabled = false; // блокировка кнопки
+          buttonElement.classList.remove("button-error");
+          formInput.classList.remove("hidden"); // панель ввода + кнопка написать
+          pointInputElement.classList.add("hidden"); // "  Комментарий добавляется..."
+      } else{
+        alert("Кажется, у вас сломался интернет, попробуйте позже");
+        formInput.classList.remove("hidden"); // панель ввода + кнопка написать
+        pointInputElement.classList.add("hidden"); // "  Комментарий добавляется..."
+        buttonElement.disabled = false; // разблокировка кнопки
+        buttonElement.classList.remove("button-error");
+      }
+      console.warn(error);
     });
     
-    renderComments();
+}
 
-  nameInputElement.value = "";
-  textInputElement.value = "";
- 
-  buttonElement.disabled = true;
-  buttonElement.classList.add("button-error");
+// =====================================================================================
+// вывод нового элемента
+firstDownload(); // проверка 
+fetchPromise(); // функция Get
+renderComments();
+
+// создание элемента 
+buttonElement.addEventListener("click", () => {
+// firstDownload(); // проверка 
+  formInput.classList.add("hidden");
+  pointInputElement.classList.remove("hidden");
+    addTodo();
+  renderComments(nameInputElement.value,textInputElement.value);
 });
 
 
