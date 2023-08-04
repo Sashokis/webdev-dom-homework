@@ -138,6 +138,10 @@ body {
   opacity: 0.9;
 }
 
+.hidden{
+  display: none;
+}
+
 .button-error{
   background-color: gray;
   color: black;
