@@ -1,5 +1,5 @@
 import { renderComments } from "./render.js";
-import { comments, buttonElement, nameInputElement, textInputElement } from "./scriptHW9.js";
+import { buttonElement, textInputElement } from "./scriptHW9.js";
 
 // изменение лайков
 export const changeLikes =  () => {
@@ -17,6 +17,7 @@ export const changeLikes =  () => {
         comments[id].likes--;
       }
       event.stopPropagation();
-      renderComments (buttonElement, nameInputElement, textInputElement);    });
+      // renderComments (buttonElement, nameInputElement, textInputElement);   
+     });
   }
 }

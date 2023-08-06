@@ -1,5 +1,5 @@
 
-import { buttonElement, nameInputElement, textInputElement } from "./scriptHW9.js";
+import { buttonElement, textInputElement } from "./scriptHW9.js";
 
 // нажатие enter
 export function enter () { 
@@ -11,7 +11,7 @@ export function enter () {
 }
 
 export function toggleButtonState() {
-  if (nameInputElement.value.trim() !== "" && textInputElement.value.trim() !== "") {
+  if (textInputElement.value.trim() !== "") {
     buttonElement.disabled = false;
     buttonElement.classList.remove("button-error");
   } else {
