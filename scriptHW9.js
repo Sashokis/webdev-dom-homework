@@ -1,5 +1,6 @@
 import { getTodos } from "./api.js";
 import { renderComments } from "./render.js";
+import { format } from "date-fns";
 
 
 export const buttonElement = document.getElementById("add-button");
@@ -26,18 +27,20 @@ export const fetchAndRenderComments = (firstStart) => {
       const commentHtml = comments
       .map((comment) => {
         const editText = comment.isEdit ? "Сохранить" : "Редактировать"; 
-        const date = new Date(comment.date);
+        // const date = new Date(comment.date);
+        const date = format(new Date(comment.date), 'yyyy-MM-dd2 hh.mm.ss');
         const index = comments.indexOf(comment);
-        const formattedDate = `${("0" + date.getDate()).slice(-2)}.${("0" + (date.getMonth() + 1)).slice(-2)}.
-        ${date.getFullYear() % 100} ${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}:${("0" + date.getSeconds()).slice(-2)}`;
+        // const formattedDate = `${("0" + date.getDate()).slice(-2)}.${("0" + (date.getMonth() + 1)).slice(-2)}.
+        // ${date.getFullYear() % 100} ${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}:${("0" + date.getSeconds()).slice(-2)}`;
         let  likeClass = comment.isLiked ? "-active-like" : "";
 
         const editCommentText = comment.isEdit ? `<textarea class="comment-text edited-textarea">${comment.text}</textarea>` :
         `<div class="comment-text">${comment.text}</div>`; 
+
         return `<li class="comment" data-id = ${comment.id}>
           <div class="comment-header">
             <div>${comment.author.name}</div>
-            <div>${formattedDate}</div>
+            <div>${date}</div>
           </div>
           <div class="comment-body">
             ${editCommentText}
@@ -65,11 +68,11 @@ export const fetchAndRenderComments = (firstStart) => {
         loginRow.style.display = "flex";
       }
     })
-    .catch(() => {
-      loadingInputElement.textContent = "У вас сломался интернет, попробуйте позже";
-      alert("Кажется, у вас сломался интернет, попробуйте позже");
-      formInput.classList.add("hidden"); // панель ввода + кнопка написать
-    })
+    // .catch(() => {
+    //   loadingInputElement.textContent = "У вас сломался интернет, попробуйте позже";
+    //   alert("Кажется, у вас сломался интернет, попробуйте позже");
+    //   formInput.classList.add("hidden"); // панель ввода + кнопка написать
+    // })
 }
 
 // вывод нового элемента
