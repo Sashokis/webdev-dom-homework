@@ -1,20 +1,57 @@
-export function getTodos (){
-    return fetch("https://wedev-api.sky.pro/api/v1/:sasha/comments", {
-    method: "GET"
-  }).then((response) => {
-      return response.json();
-  })
+const host = "https://wedev-api.sky.pro/api/v2/sasa/comments";
+const userHost = "https://wedev-api.sky.pro/api/user/login";
+
+let token;
+// преобразование переменной 
+export const setToken = (newToken) => {
+    token = newToken;
 }
 
-export function pushTodo (name, text) {
-    return fetch("https://wedev-api.sky.pro/api/v1/:sasha/comments", {
+// авторизация 
+export function login({login, password}) {
+    return fetch(userHost, {
+        method: "POST",
+        body: JSON.stringify({
+            login,
+            password,
+        }),
+    })
+    .then((response) => {
+        return response.json();
+    });   
+}
+
+// регистрация 
+export function registr({name, login, password}) {
+    return fetch(userHost, {
+        method: "POST",
+        body: JSON.stringify({
+            name,
+            login,
+            password,
+        }),
+    })
+    .then((response) => {
+        return response.json();
+    });   
+}
+
+// загрузка списка из api
+export function getTodos (){
+    return fetch(host, {
+    method: "GET",
+    headers:{
+            Authorization:  `Bearer ${token}`,
+        },
+    }).then((response) => {
+        return response.json();
+    })
+}
+
+export function pushTodo (text) {
+    return fetch(host, {
         method: "POST",
         body: JSON.stringify ({
-          name: name.
-          replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;"),
         text: text.
           replaceAll("&", "&amp;")
           .replaceAll("<", "&lt;")
@@ -22,9 +59,10 @@ export function pushTodo (name, text) {
           .replaceAll('"', "&quot;"),
         isLiked: false,
         likes: 0,
-        isEdit: false,
-        forceError: true
         }),
+        headers:{
+            Authorization:  `Bearer ${token}`,
+        },
     })
     .then((response) => {
         console.log(response);

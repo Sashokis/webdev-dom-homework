@@ -1,55 +1,71 @@
-import { comments, listElement, buttonElement, nameInputElement, textInputElement } from "./scriptHW9.js";
-import { changeLikes } from "./changLike.js";
-import { toggleButtonState} from "./basicsFunctions.js";
+import { fetchAndRenderComments} from "./scriptHW9.js";
+import { addTodo } from "./addComment.js";
+import { renderLogin } from "./login.js";
 
+let name;
+// преобразование переменной 
+export const setName = (newName) => {
+    name = newName;
+}
 
-export const renderComments = () => {
-  // блокировка кнопки 
-  buttonElement.disabled = true;
-  buttonElement.classList.add("button-error");
-  nameInputElement .addEventListener("input", toggleButtonState);
-  textInputElement.addEventListener("input", toggleButtonState);
-
-  // новый элемент
-  const commentHtml = comments
-    .map((comment) => {
-
-      const editText = comment.isEdit ? "Сохранить" : "Редактировать"; 
-      const date = new Date(comment.date);
-      const index = comments.indexOf(comment);
-      const formattedDate = `${("0" + date.getDate()).slice(-2)}.${("0" + (date.getMonth() + 1)).slice(-2)}.
-      ${date.getFullYear() % 100} ${("0" + date.getHours()).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}:${("0" + date.getSeconds()).slice(-2)}`;
-      let  likeClass = comment.isLiked ? "-active-like" : "";
-
-      const editCommentText = comment.isEdit ? `<textarea class="comment-text edited-textarea">${comment.text}</textarea>` :
-       `<div class="comment-text">${comment.text}</div>`; 
-      return `<li class="comment" data-id = ${comment.id}>
-        <div class="comment-header">
-          <div>${comment.author.name}</div>
-          <div>${formattedDate}</div>
-        </div>
-        <div class="comment-body">
-          ${editCommentText}
-        </div>
-        <div class="comment-footer">
-          <div class="likes">
-            <span class="likes-counter" id="like-counter">${comment.likes}</span>
-            <button class="like-button ${likeClass}" data-id = ${index}></button>
-          </div>
-        </div>
-        <div>
-          <p class="hidden"></p>
-        </div>
+export const renderComments = (start) => {
+ const appElement = document.getElementById('app');
+  const appHtml = 
+  `
+    <div class="container">
+      <div>
+        <p class="hidden" id = "add-form-loadingPoint">
+          Пожалуйста подождите, загружаю комментарии... 
+        </p>
+      </div>
+      <ul id="list-comment" class="comments">
+        
+      </ul>
+      <div class="add-form" id = "add-form-id">
+        <input
+          readonly 
+          id="name-input"
+          type="text"
+          class="add-form-name"
+          value = ${name}
+        />
+        <textarea 
+          id="text-input"
+          type="textarea"
+          class="add-form-text"
+          placeholder="Введите ваш коментарий"
+          rows="4"
+        ></textarea>
         <div class="add-form-row">
-          <button  class="add-form-button edit-button" data-id = ${comment.id}>${editText}</button>
+          <button id="add-button" class="add-form-button ">Написать</button>
+          <button class="add-form-button" id ="delete-comment-button">
+          Удалить последний комментарий
+        </button>
         </div>
-      </li>`;
-    })
-    .join("");
+      </div>
+      <div>
+        <p class="hidden" id = "add-form-point"> Комментарий добавляется... </p>
+      </div>
+      <div class="login-row">
+        <p> Чтобы добавить комментарий, <a  id = "login-link" href = "#">  авторизуйтесь </a> </p>
+      </div>
+    </div>
+  `;
+
+  appElement.innerHTML = appHtml;
+  fetchAndRenderComments(start);
+
+  const loginLink = document.getElementById(`login-link`);
+  loginLink.addEventListener("click", () => {
+    renderLogin();
+  });
+
+  // Добавление комментов
+  const textInputElement = document.getElementById("text-input");
+  addTodo(textInputElement, fetchAndRenderComments);
 
 
-  listElement.innerHTML = commentHtml;
-  changeLikes(); 
+  // changeLikes(); 
   // changeEdit();
   // answerComment();
 }; 
